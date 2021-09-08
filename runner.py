@@ -148,18 +148,27 @@ def run_jackhmmer(sequence, prefix):
   return msas, deletion_matrices, names
 
 import re
+import argparse
+parser = argparse.ArgumentParser("run local colab fold.")
+parser.add_argument("--sequence", type=str, required=False, default=32 * "A")
+parser.add_argument("--homooligomer", type=str, required=False, default="1")
+parser.add_argument("--jobname", type=str, required=False, default="job")
+parser.add_argument("--msa_method", type=str, required=False, default="single_sequence")
+parser.add_argument("--num_recycle", type=int, required=False, default=4)
+parser.add_argument("--num_models", type=int, required=False, default=5)
+opt = parser.parse_args()
 
 # define sequence
-sequence = 'PIAQIHILEGRSDEQKETLIREVSEAISRSLDAPLTSVRVIITEMAKGHFGIGGELASK' #@param {type:"string"}
+sequence = opt.sequence #@param {type:"string"}
 sequence = re.sub("[^A-Z:/]", "", sequence.upper())
 sequence = re.sub(":+",":",sequence)
 sequence = re.sub("/+","/",sequence)
 
-jobname = "test" #@param {type:"string"}
+jobname = opt.jobname #@param {type:"string"}
 jobname = re.sub(r'\W+', '', jobname)
 
 # define number of copies
-homooligomer =  "1" #@param {type:"string"}
+homooligomer =  opt.homooligomer #@param {type:"string"}
 homooligomer = re.sub("[:/]+",":",homooligomer)
 if len(homooligomer) == 0: homooligomer = "1"
 homooligomer = re.sub("[^0-9:]", "", homooligomer)
@@ -226,7 +235,7 @@ TQDM_BAR_FORMAT = '{l_bar}{bar}| {n_fmt}/{total_fmt} [elapsed: {elapsed} remaini
 #@markdown (Note that the search against databases and the actual prediction can take some time, from minutes to hours, depending on the length of the protein and what type of GPU you are allocated by Colab.)
 
 #@markdown ---
-msa_method = "mmseqs2" #@param ["mmseqs2","jackhmmer","single_sequence","precomputed"]
+msa_method = opt.msa_method #@param ["mmseqs2","jackhmmer","single_sequence","precomputed"]
 #@markdown - `mmseqs2` - FAST method from [ColabFold](https://github.com/sokrypton/ColabFold)
 #@markdown - `jackhmmer` - default method from Deepmind (SLOW, but may find more/less sequences).
 #@markdown - `single_sequence` - use single sequence input
@@ -506,10 +515,10 @@ show_images = True #@param {type:"boolean"}
 #@markdown There are two stochastic parts of the pipeline. Within the feature generation (choice of cluster centers) and within the model (dropout).
 #@markdown To get structure diversity, you can iterate through a fixed number of random_seeds (using `num_samples`) and/or enable dropout (using `is_training`).
 
-num_models = 5 #@param [1,2,3,4,5] {type:"raw"}
+num_models = opt.num_models #@param [1,2,3,4,5] {type:"raw"}
 use_ptm = True #@param {type:"boolean"}
 num_ensemble = 1 #@param [1,8] {type:"raw"}
-max_recycles = 3 #@param [1,3,6,12,24,48] {type:"raw"}
+max_recycles = opt.num_recycle #@param [1,3,6,12,24,48] {type:"raw"}
 tol = 0 #@param [0,0.1,0.5,1] {type:"raw"}
 is_training = False #@param {type:"boolean"}
 num_samples = 1 #@param [1,2,4,8,16,32] {type:"raw"}
