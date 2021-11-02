@@ -156,6 +156,9 @@ parser.add_argument("--jobname", type=str, required=False, default="job")
 parser.add_argument("--msa_method", type=str, required=False, default="single_sequence")
 parser.add_argument("--num_recycle", type=int, required=False, default=4)
 parser.add_argument("--num_models", type=int, required=False, default=5)
+parser.add_argument("--num_samples", type=int, required=False, default=1)
+parser.add_argument("--num_ensemble", type=int, required=False, default=1)
+parser.add_argument("--is_training", type=str, required=False, default="False")
 opt = parser.parse_args()
 
 # define sequence
@@ -498,7 +501,7 @@ if len(msa_merged) > 1:
 #%%
 #@title run alphafold
 num_relax = "None"
-rank_by = "pLDDT" #@param ["pLDDT","pTMscore"]
+rank_by = "pTMscore" #@param ["pLDDT","pTMscore"]
 use_turbo = True #@param {type:"boolean"}
 max_msa = "512:1024" #@param ["512:1024", "256:512", "128:256", "64:128", "32:64"]
 max_msa_clusters, max_extra_msa = [int(x) for x in max_msa.split(":")]
@@ -517,11 +520,11 @@ show_images = True #@param {type:"boolean"}
 
 num_models = opt.num_models #@param [1,2,3,4,5] {type:"raw"}
 use_ptm = True #@param {type:"boolean"}
-num_ensemble = 1 #@param [1,8] {type:"raw"}
+num_ensemble = opt.num_ensemble #@param [1,8] {type:"raw"}
 max_recycles = opt.num_recycle #@param [1,3,6,12,24,48] {type:"raw"}
 tol = 0 #@param [0,0.1,0.5,1] {type:"raw"}
-is_training = False #@param {type:"boolean"}
-num_samples = 1 #@param [1,2,4,8,16,32] {type:"raw"}
+is_training = opt.is_training == "True" #@param {type:"boolean"}
+num_samples = opt.num_samples #@param [1,2,4,8,16,32] {type:"raw"}
 #@markdown - `num_models` specify how many model params to try. (5 recommended)
 #@markdown - `use_ptm` uses Deepmind's `ptm` finetuned model parameters to get PAE per structure. Disable to use the original model params. (Disabling may give alternative structures.)
 #@markdown - `num_ensemble` the trunk of the network is run multiple times with different random choices for the MSA cluster centers. (`1`=`default`, `8`=`casp14 setting`)

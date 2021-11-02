@@ -5,7 +5,7 @@
 #SBATCH --mem=64GB
 #SBATCH -p gpu
 #SBATCH --gres=gpu:1
-#SBATCH -t 05:00:00
+#SBATCH -t 12:00:00
 #SBATCH --mail-user=michael.jendrusch@embl.de
 #SBATCH -e slurm-%j.err-%N
 #SBATCH -o slurm-%j.out-%N
