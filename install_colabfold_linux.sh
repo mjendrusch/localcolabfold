@@ -68,7 +68,7 @@ conda activate colabfold
 conda update -y conda
 
 echo "Installing conda-forge packages"
-conda install -c conda-forge python=3.7 cudnn==8.2.1.32 cudatoolkit==11.1.1 openmm==7.5.1 pdbfixer -y
+conda install -c conda-forge python=3.7 cudnn==8.2.1.32 cudatoolkit==11.1.1 openmm==7.5.1 pdbfixer==1.7 -y
 echo "Installing alphafold dependencies by pip"
 python3.7 -m pip install --no-cache-dir absl-py==0.13.0 biopython==1.79 chex==0.0.7 dm-haiku==0.0.4 dm-tree==0.1.6 immutabledict==2.0.0 jax==0.2.14 ml-collections==0.1.0 numpy==1.19.5 scipy==1.7.0 tensorflow-gpu==2.5.0
 python3.7 -m pip install --no-cache-dir jupyter matplotlib py3Dmol tqdm
@@ -92,6 +92,6 @@ echo "Downloading runner.py"
 # (cd ${COLABFOLDDIR} && wget -q "https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/runner.py")
 cd ${COLABFOLDDIR}
 cd ..
-cp runner ${COLABFOLDDIR}/runner.py
+cp runner.py ${COLABFOLDDIR}/runner.py
 
 echo "Installation of Alphafold2_advanced finished."

@@ -159,6 +159,8 @@ parser.add_argument("--num_models", type=int, required=False, default=5)
 parser.add_argument("--num_samples", type=int, required=False, default=1)
 parser.add_argument("--num_ensemble", type=int, required=False, default=1)
 parser.add_argument("--is_training", type=str, required=False, default="False")
+parser.add_argument("--sample_conformations", type=str, required=False, default="False")
+parser.add_argument("--max_msa", type=int, required=False, default=50)
 opt = parser.parse_args()
 
 # define sequence
@@ -551,11 +553,57 @@ for f in os.listdir(output_dir):
     os.remove(os.path.join(output_dir, f))
 
 #############################
+# subsample MSAs definition
+#############################
+# author: MJ
+# does not work
+def subsample_msa(msas, deletion_matrices, max_msa=20):
+  new_msas = []
+  new_mtcs = []
+  for msa, mtx in zip(msas, deletion_matrices):
+    if len(msa) > max_msa:
+      pos = random.sample(range(len(msa)), k=max_msa)
+      new_msas.append([msa[idx] for idx in pos])
+      new_mtcs.append([mtx[idx] for idx in pos])
+    else:
+      new_msas.append(msa)
+      new_mtcs.append(mtx)
+  return new_msas, new_mtcs
+def msa_indices(msas):
+  return [len(msa) for msa in msas]
+
+def subsample_msa_features(F, indices, N=20, random_seed=...):
+  offset = 0
+  idx_total = []
+  np.random.seed(random_seed)
+  for segment in indices:
+    if segment > N:
+      idx = np.append(0,np.random.permutation(np.arange(1,segment)))[:N]
+      idx = idx + offset
+    else:
+      idx = np.arange(0, segment) + offset
+    idx_total.append(idx)
+    offset += segment
+  idx = np.concatenate(idx_total, axis=0)
+  total = len(idx)
+  F_ = {}
+  F_["msa"] = F["msa"][idx]
+  F_["deletion_matrix_int"] = F["deletion_matrix_int"][idx]
+  F_["num_alignments"] = np.full_like(F["num_alignments"],total)
+  for k in ['aatype', 'between_segment_residues',
+            'domain_name', 'residue_index',
+            'seq_length', 'sequence']:
+            F_[k] = F[k]
+  return F_
+
+#############################
 # homooligomerize
 #############################
 lengths = [len(seq) for seq in seqs]
 msas_mod, deletion_matrices_mod = cf.homooligomerize_heterooligomer(msas, deletion_matrices,
                                                                     lengths, homooligomers)
+msa_segments = msa_indices(msas)
+
 #############################
 # define input features
 #############################
@@ -686,7 +734,10 @@ with tqdm.notebook.tqdm(total=total, bar_format=TQDM_BAR_FORMAT) as pbar:
       # predict
       key = f"{name}_seed_{seed}"
       pbar.set_description(f'Running {key}')
-      if subsample_msa:
+      if opt.sample_conformations == "True":
+        sampled_feats_dict = subsample_msa_features(feature_dict, msa_segments, N=opt.max_msa, random_seed=seed)
+        processed_feature_dict = model_runner.process_features(sampled_feats_dict, random_seed=seed)
+      elif subsample_msa:
         subsampled_N = int(3E7/L)
         sampled_feats_dict = do_subsample_msa(feature_dict, N=subsampled_N, random_seed=seed)
         processed_feature_dict = model_runner.process_features(sampled_feats_dict, random_seed=seed)
