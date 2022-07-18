@@ -161,6 +161,8 @@ parser.add_argument("--num_ensemble", type=int, required=False, default=1)
 parser.add_argument("--is_training", type=str, required=False, default="False")
 parser.add_argument("--sample_conformations", type=str, required=False, default="False")
 parser.add_argument("--max_msa", type=int, required=False, default=50)
+parser.add_argument("--tol", type=float, required=False, default=0.0)
+parser.add_argument("--out_path", type=str, required=False, default="none")
 opt = parser.parse_args()
 
 # define sequence
@@ -524,7 +526,7 @@ num_models = opt.num_models #@param [1,2,3,4,5] {type:"raw"}
 use_ptm = True #@param {type:"boolean"}
 num_ensemble = opt.num_ensemble #@param [1,8] {type:"raw"}
 max_recycles = opt.num_recycle #@param [1,3,6,12,24,48] {type:"raw"}
-tol = 0 #@param [0,0.1,0.5,1] {type:"raw"}
+tol = opt.tol #@param [0,0.1,0.5,1] {type:"raw"}
 is_training = opt.is_training == "True" #@param {type:"boolean"}
 num_samples = opt.num_samples #@param [1,2,4,8,16,32] {type:"raw"}
 #@markdown - `num_models` specify how many model params to try. (5 recommended)
@@ -926,3 +928,10 @@ if save_to_txt:
     else:
       do_save_to_txt(txt_filename,adj=outs[k]["adj"],dists=outs[k]["dists"])
 #%%
+
+import os
+import shutil
+if opt.out_path != "none":
+  if not os.is_dir(opt.out_path):
+    os.mkdir(opt.out_path)
+  shutil.move(output_dir, os.path.join(opt.out_path, output_dir))
