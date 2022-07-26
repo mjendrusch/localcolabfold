@@ -932,6 +932,6 @@ if save_to_txt:
 import os
 import shutil
 if opt.out_path != "none":
-  if not os.is_dir(opt.out_path):
-    os.mkdir(opt.out_path)
+  if not os.path.exists(opt.out_path):
+    os.makedirs(opt.out_path)
   shutil.move(output_dir, os.path.join(opt.out_path, output_dir))

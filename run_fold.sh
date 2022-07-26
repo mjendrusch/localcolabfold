@@ -5,15 +5,14 @@
 #SBATCH --mem=64GB
 #SBATCH -p gpu
 #SBATCH --gres=gpu:1
-#SBATCH -t 12:00:00
+#SBATCH -t 24:00:00
 #SBATCH --mail-user=michael.jendrusch@embl.de
 #SBATCH -e slurm-%j.err-%N
 #SBATCH -o slurm-%j.out-%N
-#SBATCH --mail-type=FAIL,BEGIN,END
+#SBATCH --mail-type=FAIL
 
 source $HOME/.bashrc
 module load CUDA/11.1.1-GCC-10.2.0
-module load Rosetta
 conda activate colabfold
 cd $COLABFOLD
 
