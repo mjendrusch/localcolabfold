@@ -8,11 +8,12 @@ To Do: Implementation of command line arguments for `runner.py` (Sep.06, 2021)
 
 ### For Linux
 
-1. Make sure `curl` and `wget` commands are already installed on your PC. If not present, you need install them at first. For Ubuntu, type `sudo apt -y install curl wget`.
-1. Download `install_colabfold_linux.sh` from this repository:<pre>$ wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/install_colabfold_linux.sh</pre> and run it in the directory where you want to install:<pre>$ bash install_colabfold_linux.sh</pre>About 5 minutes later, `colabfold` directory will be created. Do not move this directory after the installation.
-1. Type `cd colabfold` to enter the directory.
-1. Modify the variables such as `sequence = 'PIAQIHILEGRSDEQKETLIREVSEAISRSLDAPLTSVRVIITEMAKGHFGIGGELASK'`, `jobname = "test"`, and etc. in `runner.py` for your prediction. For more information, please refer to the original [ColabFold / AlphaFold2_advanced](https://colab.research.google.com/github/sokrypton/ColabFold/blob/main/beta/AlphaFold2_advanced.ipynb).
-1. To run the prediction, type <pre>$ colabfold-conda/bin/python3.7 runner.py</pre>in the `colabfold` directory. The result files will be created in the `predition_<jobname>_<hash>` in the `colabfold` directory. After the prediction finished, you may move the results from the `colabfold` directory.
+1. ensure conda is installed and configured with `conda init`.
+2. git clone this repository.
+3. cd to this repository and run `source install_colabfold_linux.sh`.
+4. to run predictions on a slurm cluster, use the `export COLABFOLD=/path/to/colabfold bash run_complex.sh output_path sequences.csv` with a CSV file with the following format:
+  - `<sequence/job name>,<sequence or list of sequences separated by ":">,<number of subunits for each sequence separated by ":">`
+  - e.g. `testsequence,MERRYCHRISTMAS:HAPPYEASTER,2:1`
 
 ### For macOS
 
